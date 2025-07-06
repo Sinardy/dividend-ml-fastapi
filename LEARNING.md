@@ -5,8 +5,6 @@ This document captures personal insights and learning milestones from building t
 
 ---
 
-## 🚀 What I Learned
-
 ### 🐳 Docker & Docker Compose
 - How to create isolated environments for Python, FastAPI, and PostgreSQL.
 - How to persist data using Docker volumes.
