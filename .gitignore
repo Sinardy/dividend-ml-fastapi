@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Environment
+.env
+.venv/
+env/
+venv/
+Pipfile.lock
+poetry.lock
+
+# Jupyter
+.ipynb_checkpoints
+
+# macOS
+.DS_Store
+
+# VSCode / other IDE
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Docker
+*.pid
+*.seed
+docker-compose.override.yml
+
+# Model artifacts
+*.joblib
+*.h5
+*.pkl
+
+# Database volumes
+postgres_data/
