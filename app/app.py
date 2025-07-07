@@ -45,7 +45,7 @@ class InputData(BaseModel):
 
 class Company(BaseModel):
     ticker: str
-    company_name: str
+    name: str
 
 @app.post("/predict")
 def predict(data: InputData):
@@ -117,20 +117,21 @@ def metrics():
         "interpretation": interpretation
     }
 
-@app.get("/data")
+@app.get("/fundamental/data")
 def get_data():
     query = "SELECT * FROM fundamentals ORDER BY date DESC LIMIT 10"
     df = pd.read_sql(query, engine)
     return df.to_dict(orient="records")
 
-@app.post("/companies")
+@app.post("/companies/add")
 def add_company(company: Company):
     with engine.connect() as conn:
         try:
             conn.execute(
-                text("INSERT INTO companies (ticker, company_name) VALUES (:ticker, :company_name)"),
-                {"ticker": company.ticker.upper(), "company_name": company.company_name}
+                text("INSERT INTO companies (ticker, name) VALUES (:ticker, :name)"),
+                {"ticker": company.ticker.upper(), "name": company.name}
             )
+            conn.commit()
             return {"status": "ok", "message": f"{company.ticker.upper()} added."}
         except Exception as e:
             if "duplicate key" in str(e) or "unique constraint" in str(e):
@@ -139,15 +140,20 @@ def add_company(company: Company):
 
 @app.get("/companies/list")
 def list_companies():
-    with engine.connect() as conn:
-        result = conn.execute(text("SELECT ticker, company_name FROM companies"))
-        companies = [{"ticker": row[0], "company_name": row[1]} for row in result.fetchall()]
-    return {"companies": companies}
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT ticker, name FROM companies"))
+            companies = [{"ticker": row[0], "name": row[1]} for row in result.fetchall()]
+        return {"companies": companies}
+    except Exception as e:
+        print(f"Error in list_companies: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-@app.delete("/delete_company/{ticker}")
+@app.delete("/companies/delete/{ticker}")
 def delete_company(ticker: str):
     with engine.connect() as conn:
         result = conn.execute(text("DELETE FROM companies WHERE ticker = :ticker"), {"ticker": ticker.upper()})
+        conn.commit()
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail=f"Ticker {ticker.upper()} not found.")
     return {"status": "ok", "message": f"Deleted {ticker.upper()}"}
