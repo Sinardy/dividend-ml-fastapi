@@ -1,8 +1,10 @@
+
 fastapi
-uvicorn
-pandas
-scikit-learn
-joblib
-psycopg2-binary
+uvicorn[standard]
 sqlalchemy
-yfinance
+psycopg2-binary
+pandas
+numpy
+joblib
+scikit-learn
+jinja2
